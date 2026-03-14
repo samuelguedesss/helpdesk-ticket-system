@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "root",
+    "password": "root",
+    "database": "sistema_chamado",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}

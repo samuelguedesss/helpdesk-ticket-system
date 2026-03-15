@@ -13,6 +13,31 @@ Sistema full stack para gerenciamento de chamados internos de suporte. Desenvolv
 
 ---
 
+## Screenshots
+
+### Tela de Login
+![Tela de Login](screenshots/tela-login.png)
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### Abertura de Chamado
+![Novo Chamado](screenshots/novo-chamado.png)
+
+### Lista de Chamados
+![Lista de Chamados](screenshots/lista-chamados.png)
+
+### Detalhe do Chamado com Chat
+![Detalhe do Chamado](screenshots/detalhe-chamado.png)
+
+### Gerenciar Usuarios
+![Gerenciar Usuarios](screenshots/gerenciar-usuarios.png)
+
+### Gerenciar Categorias
+![Gerenciar Categorias](screenshots/gerenciar-categorias.png)
+
+---
+
 ## Visao Geral
 
 Em empresas de medio e grande porte, a gestao de chamados internos de suporte e frequentemente feita por e-mail ou planilhas, o que gera perda de rastreabilidade, atrasos e falta de visibilidade para gestores.

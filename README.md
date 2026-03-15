@@ -96,6 +96,149 @@ O **Help Desk Ticket System** resolve esse problema centralizando todo o fluxo d
 
 ---
 
+## Regras de Negocio e Permissoes
+
+### Perfis de Acesso (RBAC)
+
+O sistema implementa controle de acesso baseado em perfis com tres niveis:
+
+| Perfil | ID | Descricao |
+|---|---|---|
+| **Administrador** | 1 | Acesso total ao sistema. Visualiza todos os chamados, gerencia usuarios, categorias e tecnicos. |
+| **Tecnico** | 2 | Responsavel por assumir e resolver chamados. Visualiza apenas chamados vinculados as suas categorias. |
+| **Usuario** | 3 | Abre chamados e acompanha o status. Visualiza apenas seus proprios chamados. |
+
+### Visibilidade de Chamados por Perfil
+
+A logica de visibilidade e aplicada no backend a nivel de query (Repository Layer):
+
+| Perfil | O que visualiza | Logica |
+|---|---|---|
+| **Admin** | Todos os chamados do sistema | Sem filtro de usuario |
+| **Tecnico** | Chamados das categorias vinculadas ao seu perfil que estao sem responsavel OU ja atribuidos a ele | `JOIN UserCategory` + filtro `id_responsible IS NULL OR id_responsible = tecnico.id` |
+| **Usuario** | Apenas chamados que ele mesmo abriu | Filtro `id_user = usuario.id` |
+
+### Vinculo Tecnico-Categoria (UserCategory)
+
+Cada tecnico e vinculado a uma ou mais categorias de chamados. Essa vinculacao determina quais chamados o tecnico pode visualizar e assumir:
+
+```
+Tecnico A vinculado a "Solicitacoes TI"
+  → Ve todos os chamados abertos em "Solicitacoes TI"
+  → Pode assumir qualquer chamado dessa categoria
+
+Tecnico B NAO vinculado a "Solicitacoes TI"
+  → NAO ve nenhum chamado dessa categoria
+  → NAO pode assumir chamados dessa categoria
+```
+
+Essa logica e aplicada via **JOIN obrigatorio** na tabela `UserCategory` no momento da consulta, garantindo a seguranca a nivel de banco de dados.
+
+### Fluxo de Status dos Chamados
+
+O ciclo de vida de um chamado segue a seguinte maquina de estados:
+
+```
+                    ┌─────────────────────────────────────┐
+                    │           REABRIR                    │
+                    │     (dentro de 48h)                  │
+                    ▼                                      │
+┌──────────┐    ┌──────────────┐    ┌──────────────┐    ┌─┴────────┐
+│  ABERTO  │───>│EM ANDAMENTO  │───>│ AGUARDANDO   │───>│ FECHADO  │
+│  (1)     │    │    (2)       │<───│    (3)       │    │   (4)    │
+└──────────┘    └──────┬───────┘    └──────────────┘    └──────────┘
+                       │                                      ▲
+                       └──────────────────────────────────────┘
+                              FINALIZAR CHAMADO
+```
+
+| Transicao | Acao | Quem pode executar | Requisitos |
+|---|---|---|---|
+| 1 → 2 | **Assumir** chamado | Tecnico vinculado a categoria | Aprovacao financeira (se necessario) |
+| 2 → 3 | Colocar em **Aguardando** | Tecnico responsavel | - |
+| 3 → 2 | Retomar **Em Andamento** | Tecnico responsavel | - |
+| 2/3 → 4 | **Finalizar** chamado | Tecnico responsavel | Descricao de finalizacao obrigatoria |
+| 4 → 1 | **Reabrir** chamado | Solicitante, tecnico responsavel ou admin | Dentro de 48h + motivo de reabertura |
+| 2 → 1 | **Retribuir** chamado | Tecnico responsavel | Chamado volta para fila sem responsavel |
+
+**Regras importantes:**
+- Apenas o **tecnico responsavel** pode alterar o status do chamado
+- Nao e permitido retornar um chamado para "Aberto" via alteracao de status (apenas via reabertura)
+- A **finalizacao exige descricao** obrigatoria explicando a resolucao
+- A **reabertura** so e permitida dentro de **48 horas** apos o fechamento
+
+### Fluxo de Aprovacao Financeira
+
+Chamados de subcategorias especificas exigem aprovacao financeira antes de serem assumidos por um tecnico:
+
+```
+Chamado criado (subcategoria com aprovacao)
+         │
+         ▼
+  financial_approval_status = "pending"
+         │
+         ▼
+  Fila de Aprovacao (Departamento Financeiro)
+         │
+    ┌────┴────┐
+    ▼         ▼
+APROVADO   REJEITADO
+    │         │
+    ▼         ▼
+Tecnico    Chamado fechado
+pode       automaticamente
+assumir    com motivo
+```
+
+| Acao | Quem executa | Efeito |
+|---|---|---|
+| **Aprovar** | Usuario do departamento financeiro (dept. 7) | Tecnico pode assumir o chamado normalmente |
+| **Rejeitar** | Usuario do departamento financeiro (dept. 7) | Chamado e **fechado automaticamente** com motivo da rejeicao |
+
+**Se um chamado rejeitado for reaberto:**
+- O status de aprovacao volta para `pending`
+- Requer nova aprovacao financeira antes de ser assumido
+
+### Protecao de Rotas
+
+A seguranca e aplicada em duas camadas:
+
+**Backend (API):**
+- Todas as rotas protegidas usam `AuthMiddleware` que valida o JWT
+- Services fazem verificacoes adicionais de perfil e propriedade do chamado
+- Exemplos: apenas tecnico responsavel altera status, apenas dept. financeiro aprova chamados
+
+**Frontend (SPA):**
+- `PrivateRoute` verifica autenticacao e redireciona para `/login` se invalido
+- Componentes `AdminOnly`, `TechnicianOnly`, `UserOnly`, `FinancialOnly` controlam renderizacao
+- Menu lateral exibe opcoes diferentes por perfil:
+
+| Menu | Admin | Tecnico | Usuario |
+|---|---|---|---|
+| Home | ✓ | ✓ | ✓ |
+| Abrir Chamado | ✓ | ✓ | ✓ |
+| Lista de Chamados | ✓ | ✗ | ✓ |
+| Gerenciar Chamados | ✗ | ✓ | ✗ |
+| Historico | ✓ | ✓ | ✓ |
+| Gerenciar Categorias | ✓ | ✓ | ✗ |
+| Gerenciar Usuarios | ✓ | ✓ | ✗ |
+| Fila de Aprovacao | Dept. Financeiro | Dept. Financeiro | ✗ |
+
+### Historico de Chamados
+
+A consulta do historico (chamados fechados) tambem respeita o perfil:
+
+| Perfil | Visualizacao no Historico |
+|---|---|
+| **Admin** | Todos os chamados fechados |
+| **Tecnico** | Apenas chamados que foi responsavel |
+| **Usuario** | Apenas chamados que abriu |
+| **Financeiro** | Chamados que aprovou/rejeitou |
+
+Cada chamado no historico exibe um flag `pode_reabrir` que indica se esta dentro da janela de 48h para reabertura.
+
+---
+
 ## Tecnologias Utilizadas
 
 ### Frontend

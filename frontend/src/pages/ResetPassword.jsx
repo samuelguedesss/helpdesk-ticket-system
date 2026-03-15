@@ -1,11 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, Typography, Link, Paper, InputAdornment, IconButton } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+    Box,
+    Button,
+    TextField,
+    Typography,
+    Link,
+    Paper,
+    InputAdornment,
+    IconButton,
+} from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import imgLoginn from "../assets/Rectangle140.png";
-import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+import LockIcon from "@mui/icons-material/Lock";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import apiBackend from '../services/apiBackend';
+import apiBackend from "../services/apiBackend";
 import AppAlert from "../components/AppAlert";
 
 export default function ResetPassword() {
@@ -23,7 +32,6 @@ export default function ResetPassword() {
     const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
     const closeAlert = () => setAlert((prev) => ({ ...prev, open: false }));
 
-    // Valida o token assim que a página carrega
     useEffect(() => {
         const verificarToken = async () => {
             if (!token) { setTokenValido(false); return; }
@@ -58,153 +66,187 @@ export default function ResetPassword() {
         }
     };
 
+    const inputSx = {
+        mb: 2,
+        "& .MuiOutlinedInput-root": {
+            borderRadius: "10px",
+            backgroundColor: "#f9f9f9",
+            "&:hover fieldset": { borderColor: "#2F3A32" },
+            "&.Mui-focused fieldset": { borderColor: "#2F3A32" },
+        },
+    };
+
     return (
         <Box
             sx={{
                 display: "flex",
                 minHeight: "100vh",
-                background: "linear-gradient(120deg, #d8d6c7, #f5f5f5)",
+                background: "#2F3A32",
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 2,
             }}
         >
             <Paper
-                elevation={3}
+                elevation={0}
                 sx={{
-                    width: "90%",
-                    maxWidth: "1100px",
-                    borderRadius: "16px",
+                    width: "95%",
+                    maxWidth: "460px",
+                    borderRadius: "20px",
                     overflow: "hidden",
-                    display: "flex",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+                    backgroundColor: "#fff",
+                    padding: { xs: "36px 28px", md: "44px 40px" },
                 }}
             >
-                <Box
-                    sx={{
-                        flex: 1,
-                        padding: "50px 60px",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        backgroundColor: "#FFFFFF",
-                        position: "relative",
-                    }}
-                >
-                    {/* LOGO */}
-                    <Box sx={{ position: "absolute", top: "25px", left: "30px", display: "flex", alignItems: "center", gap: 1, opacity: 0.7 }}>
-                        <SupportAgentIcon sx={{ fontSize: 32, color: "#2F3A32" }} />
-                        <Typography fontWeight={700} fontSize={16} color="#2F3A32">HelpDesk</Typography>
-                    </Box>
-
-                    {/* TOKEN INVÁLIDO */}
-                    {tokenValido === false && (
-                        <>
-                            <Typography variant="h5" fontWeight={700} mb={1}>
-                                Link inválido ou expirado
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: "#808080" }} mb={4}>
-                                Este link de redefinição de senha não é mais válido. Solicite um novo link.
-                            </Typography>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                onClick={() => navigate("/esqueci-senha")}
-                                sx={{ backgroundColor: "#2D3E2E", padding: "12px", fontWeight: "bold", "&:hover": { backgroundColor: "#1f2c20" } }}
-                            >
-                                SOLICITAR NOVO LINK
-                            </Button>
-                        </>
-                    )}
-
-                    {/* FORMULÁRIO */}
-                    {tokenValido === true && (
-                        <>
-                            <Typography variant="h5" fontWeight={700} mb={1}>
-                                Redefinir senha
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: "#808080" }} mb={4}>
-                                Digite sua nova senha abaixo. Ela deve ter pelo menos 8 caracteres, uma letra maiúscula, um número e um caractere especial.
-                            </Typography>
-
-                            <TextField
-                                label="Nova senha"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                                type={showPassword ? "text" : "password"}
-                                sx={{ mb: 2, backgroundColor: "#ffffff", border: "1px solid #E2E2E2" }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={() => setShowPassword(!showPassword)}>
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-
-                            <TextField
-                                label="Confirmar nova senha"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                fullWidth
-                                variant="outlined"
-                                type={showConfirm ? "text" : "password"}
-                                sx={{ mb: 3, backgroundColor: "#ffffff", border: "1px solid #E2E2E2" }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={() => setShowConfirm(!showConfirm)}>
-                                                {showConfirm ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                onClick={handleSubmit}
-                                disabled={loading}
-                                sx={{ backgroundColor: "#2D3E2E", padding: "12px", fontWeight: "bold", "&:hover": { backgroundColor: "#1f2c20" } }}
-                            >
-                                {loading ? "SALVANDO..." : "SALVAR NOVA SENHA"}
-                            </Button>
-                        </>
-                    )}
-
-                    <Box textAlign="center" sx={{ mt: 3 }}>
-                        <Link
-                            component="button"
-                            underline="always"
-                            fontSize="0.875rem"
-                            sx={{ color: "#808080" }}
-                            onClick={() => navigate("/login")}
+                {/* TOKEN INVÁLIDO */}
+                {tokenValido === false && (
+                    <>
+                        <Box
+                            sx={{
+                                width: 52,
+                                height: 52,
+                                borderRadius: "12px",
+                                backgroundColor: "#c62828",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                mb: 3,
+                            }}
                         >
-                            Voltar para o login
-                        </Link>
-                    </Box>
-                </Box>
+                            <ErrorOutlineIcon sx={{ fontSize: 26, color: "#fff" }} />
+                        </Box>
 
-                <Box
-                    sx={{
-                        width: "50%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        padding: "26px",
-                        borderRadius: "0 20px 20px 0",
-                    }}
-                >
-                    <Box
-                        component="img"
-                        src={imgLoginn}
-                        alt="Illustration"
-                        sx={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "26px" }}
-                    />
+                        <Typography variant="h5" fontWeight={800} sx={{ mb: 0.5, color: "#1a1a1a" }}>
+                            Link inválido ou expirado
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: "#999", mb: 4, lineHeight: 1.7 }}>
+                            Este link de redefinição de senha não é mais válido. Solicite um novo link.
+                        </Typography>
+
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            onClick={() => navigate("/forgot-password")}
+                            disableElevation
+                            sx={{
+                                backgroundColor: "#2F3A32",
+                                padding: "12px",
+                                fontWeight: 700,
+                                fontSize: "0.9rem",
+                                borderRadius: "10px",
+                                textTransform: "none",
+                                "&:hover": { backgroundColor: "#1f2c20" },
+                            }}
+                        >
+                            Solicitar novo link
+                        </Button>
+                    </>
+                )}
+
+                {/* FORMULÁRIO */}
+                {tokenValido === true && (
+                    <>
+                        <Box
+                            sx={{
+                                width: 52,
+                                height: 52,
+                                borderRadius: "12px",
+                                backgroundColor: "#2F3A32",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                mb: 3,
+                            }}
+                        >
+                            <LockIcon sx={{ fontSize: 26, color: "#fff" }} />
+                        </Box>
+
+                        <Typography variant="h5" fontWeight={800} sx={{ mb: 0.5, color: "#1a1a1a" }}>
+                            Redefinir senha
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: "#999", mb: 4, lineHeight: 1.7 }}>
+                            Digite sua nova senha abaixo. Ela deve ter pelo menos 8 caracteres, uma letra maiúscula, um número e um caractere especial.
+                        </Typography>
+
+                        <Typography variant="caption" fontWeight={600} sx={{ color: "#555", mb: 0.5 }}>
+                            Nova senha
+                        </Typography>
+                        <TextField
+                            placeholder="••••••••"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            type={showPassword ? "text" : "password"}
+                            sx={inputSx}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={() => setShowPassword(!showPassword)} size="small">
+                                            {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+
+                        <Typography variant="caption" fontWeight={600} sx={{ color: "#555", mb: 0.5 }}>
+                            Confirmar nova senha
+                        </Typography>
+                        <TextField
+                            placeholder="••••••••"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            type={showConfirm ? "text" : "password"}
+                            sx={{ ...inputSx, mb: 3 }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={() => setShowConfirm(!showConfirm)} size="small">
+                                            {showConfirm ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            onClick={handleSubmit}
+                            disabled={loading}
+                            disableElevation
+                            sx={{
+                                backgroundColor: "#2F3A32",
+                                padding: "12px",
+                                fontWeight: 700,
+                                fontSize: "0.9rem",
+                                borderRadius: "10px",
+                                textTransform: "none",
+                                "&:hover": { backgroundColor: "#1f2c20" },
+                            }}
+                        >
+                            {loading ? "Salvando..." : "Salvar nova senha"}
+                        </Button>
+                    </>
+                )}
+
+                <Box textAlign="center" sx={{ mt: 3 }}>
+                    <Link
+                        component="button"
+                        underline="hover"
+                        fontSize="0.85rem"
+                        fontWeight={500}
+                        sx={{ color: "#2F3A32" }}
+                        onClick={() => navigate("/login")}
+                    >
+                        Voltar para o login
+                    </Link>
                 </Box>
             </Paper>
 

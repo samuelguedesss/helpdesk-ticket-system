@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Box, Button, TextField, Typography, Link, Paper } from "@mui/material";
-import imgLoginn from "../assets/Rectangle140.png";
-import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+import LockResetIcon from "@mui/icons-material/LockReset";
 import { useNavigate } from "react-router-dom";
-import apiBackend from '../services/apiBackend';
+import apiBackend from "../services/apiBackend";
 import AppAlert from "../components/AppAlert";
 
 export default function ForgotPassword() {
@@ -33,100 +32,97 @@ export default function ForgotPassword() {
             sx={{
                 display: "flex",
                 minHeight: "100vh",
-                background: "linear-gradient(120deg, #d8d6c7, #f5f5f5)",
+                background: "#2F3A32",
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 2,
             }}
         >
             <Paper
-                elevation={3}
+                elevation={0}
                 sx={{
-                    width: "90%",
-                    maxWidth: "1100px",
-                    borderRadius: "16px",
+                    width: "95%",
+                    maxWidth: "460px",
+                    borderRadius: "20px",
                     overflow: "hidden",
-                    display: "flex",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+                    backgroundColor: "#fff",
+                    padding: { xs: "36px 28px", md: "44px 40px" },
                 }}
             >
                 <Box
                     sx={{
-                        flex: 1,
-                        padding: "50px 60px",
+                        width: 52,
+                        height: 52,
+                        borderRadius: "12px",
+                        backgroundColor: "#2F3A32",
                         display: "flex",
-                        flexDirection: "column",
+                        alignItems: "center",
                         justifyContent: "center",
-                        backgroundColor: "#FFFFFF",
-                        position: "relative",
+                        mb: 3,
                     }}
                 >
-                    {/* LOGO */}
-                    <Box sx={{ position: "absolute", top: "25px", left: "30px", display: "flex", alignItems: "center", gap: 1, opacity: 0.7 }}>
-                        <SupportAgentIcon sx={{ fontSize: 32, color: "#2F3A32" }} />
-                        <Typography fontWeight={700} fontSize={16} color="#2F3A32">HelpDesk</Typography>
-                    </Box>
-
-                    <Typography variant="h5" fontWeight={700} mb={1}>
-                        Esqueceu sua senha?
-                    </Typography>
-
-                    <Typography variant="body2" sx={{ color: "#808080" }} mb={4}>
-                        Informe seu e-mail cadastrado e enviaremos um link para redefinir sua senha.
-                    </Typography>
-
-                    <TextField
-                        label="E-mail"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        fullWidth
-                        variant="outlined"
-                        sx={{ mb: 3, backgroundColor: "#ffffff", border: "1px solid #E2E2E2" }}
-                    />
-
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        onClick={handleSubmit}
-                        disabled={loading}
-                        sx={{
-                            backgroundColor: "#2D3E2E",
-                            padding: "12px",
-                            fontWeight: "bold",
-                            "&:hover": { backgroundColor: "#1f2c20" },
-                        }}
-                    >
-                        {loading ? "ENVIANDO..." : "ENVIAR LINK"}
-                    </Button>
-
-                    <Box textAlign="center" sx={{ mt: 3 }}>
-                        <Link
-                            component="button"
-                            underline="always"
-                            fontSize="0.875rem"
-                            sx={{ color: "#808080" }}
-                            onClick={() => navigate("/login")}
-                        >
-                            Voltar para o login
-                        </Link>
-                    </Box>
+                    <LockResetIcon sx={{ fontSize: 26, color: "#fff" }} />
                 </Box>
 
-                <Box
+                <Typography variant="h5" fontWeight={800} sx={{ mb: 0.5, color: "#1a1a1a" }}>
+                    Esqueceu sua senha?
+                </Typography>
+                <Typography variant="body2" sx={{ color: "#999", mb: 4, lineHeight: 1.7 }}>
+                    Informe seu e-mail cadastrado e enviaremos um link para redefinir sua senha.
+                </Typography>
+
+                <Typography variant="caption" fontWeight={600} sx={{ color: "#555", mb: 0.5 }}>
+                    E-mail
+                </Typography>
+                <TextField
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                    size="small"
                     sx={{
-                        width: "50%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        padding: "26px",
-                        borderRadius: "0 20px 20px 0",
+                        mb: 3,
+                        "& .MuiOutlinedInput-root": {
+                            borderRadius: "10px",
+                            backgroundColor: "#f9f9f9",
+                            "&:hover fieldset": { borderColor: "#2F3A32" },
+                            "&.Mui-focused fieldset": { borderColor: "#2F3A32" },
+                        },
+                    }}
+                />
+
+                <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    disableElevation
+                    sx={{
+                        backgroundColor: "#2F3A32",
+                        padding: "12px",
+                        fontWeight: 700,
+                        fontSize: "0.9rem",
+                        borderRadius: "10px",
+                        textTransform: "none",
+                        "&:hover": { backgroundColor: "#1f2c20" },
                     }}
                 >
-                    <Box
-                        component="img"
-                        src={imgLoginn}
-                        alt="Illustration"
-                        sx={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "26px" }}
-                    />
+                    {loading ? "Enviando..." : "Enviar link de recuperação"}
+                </Button>
+
+                <Box textAlign="center" sx={{ mt: 3 }}>
+                    <Link
+                        component="button"
+                        underline="hover"
+                        fontSize="0.85rem"
+                        fontWeight={500}
+                        sx={{ color: "#2F3A32" }}
+                        onClick={() => navigate("/login")}
+                    >
+                        Voltar para o login
+                    </Link>
                 </Box>
             </Paper>
 

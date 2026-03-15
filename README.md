@@ -18,23 +18,48 @@ Sistema full stack para gerenciamento de chamados internos de suporte. Desenvolv
 ### Tela de Login
 ![Tela de Login](screenshots/tela-login.png)
 
-### Dashboard
+### Dashboard (Administrador)
+> Painel principal do administrador com acesso completo a todas as funcionalidades do sistema.
+
 ![Dashboard](screenshots/dashboard.png)
 
 ### Abertura de Chamado
+> Formulario de abertura com selecao de categoria, subcategoria, prioridade e campos dinamicos.
+
 ![Novo Chamado](screenshots/novo-chamado.png)
 
 ### Lista de Chamados
+> Visao administrativa com todos os chamados do sistema, filtros e status em tempo real.
+
 ![Lista de Chamados](screenshots/lista-chamados.png)
 
 ### Detalhe do Chamado com Chat
+> Tela de acompanhamento com chat integrado entre solicitante e tecnico responsavel.
+
 ![Detalhe do Chamado](screenshots/detalhe-chamado.png)
 
-### Gerenciar Usuarios
-![Gerenciar Usuarios](screenshots/gerenciar-usuarios.png)
+### Cadastro de Usuarios
+> Formulario completo para criacao de usuarios com foto de perfil, dados pessoais, cargo, centro de custo e departamento.
+
+![Cadastro de Usuarios](screenshots/cadastro-usuarios.png)
 
 ### Gerenciar Categorias
 ![Gerenciar Categorias](screenshots/gerenciar-categorias.png)
+
+### Notificacoes
+> Sistema de notificacoes em tempo real com alertas de novos chamados, mensagens e finalizacoes. Suporte a marcar como lida e limpar historico.
+
+![Notificacoes](screenshots/notificacoes.png)
+
+### Historico de Chamados
+> Consulta de chamados finalizados com opcao de reabertura dentro da janela de 48 horas. Exibe categoria, responsavel e tempo desde o fechamento.
+
+![Historico de Chamados](screenshots/historico-chamados.png)
+
+### Dashboard (Usuario Comum)
+> Visao de um usuario com perfil "Usuario" — menu lateral simplificado com acesso apenas a abertura de chamados, lista pessoal e historico. Sem acesso a funcoes administrativas.
+
+![Dashboard Usuario](screenshots/dashboard-usuario.png)
 
 ---
 

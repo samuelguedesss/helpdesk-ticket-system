@@ -22,12 +22,12 @@ module.exports = {
                 },
                 {
                     id: 4,
-                    name: "Suporte Sistema ABCP",
+                    name: "Suporte Infraestrutura",
                     description: null,
                 },
                 {
                     id: 5,
-                    name: "Suporte Sistema NTD",
+                    name: "Suporte Rede e Servidores",
                     description: null,
                 },
             ],

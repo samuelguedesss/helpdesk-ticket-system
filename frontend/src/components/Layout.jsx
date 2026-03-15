@@ -21,7 +21,7 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 
-import logo from "../assets/grce_logo_novo.png";
+import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 
 const formatTimeAgo = (dateStr) => {
     const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
@@ -89,7 +89,7 @@ export default function Layout() {
             {/* SIDEBAR */}
             <Box sx={{ width: open ? 220 : 80, background: "#2F3A32", display: "flex", flexDirection: "column", justifyContent: "space-between", py: 3, px: open ? 2 : 0, transition: "width 0.25s ease-in-out" }}>
                 <Box sx={{ display: "flex", justifyContent: open ? "flex-start" : "center", px: open ? 1 : 0, mb: 6, position: "relative", top: "-15px", margin: "0px 0px 0px 80px" }}>
-                    <Box component="img" src={logo} sx={{ position: "relative", right: open ? "60%" : "0px", height: "45px" }} />
+                    <SupportAgentIcon sx={{ fontSize: 38, color: "#fff" }} />
                 </Box>
 
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2, position: "fixed", top: "5rem", left: open ? "16px" : "19px" }}>

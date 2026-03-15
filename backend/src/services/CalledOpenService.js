@@ -105,7 +105,7 @@ const createCalledService = async ({ id_user, id_category, id_subcategory }) => 
                                 </tr>
                                 <tr>
                                     <td align="center" style="padding:20px; background-color:#2D3E2E; color:#FFF; font-size:10px; letter-spacing:1px;">
-                                        SISTEMA DE CHAMADOS | GRCE
+                                        SISTEMA DE CHAMADOS | HELPDESK
                                     </td>
                                 </tr>
                             </table>
@@ -200,7 +200,7 @@ const createCalledService = async ({ id_user, id_category, id_subcategory }) => 
                                     </tr>
                                     <tr>
                                         <td align="center" style="padding:20px; background-color:#2D3E2E; color:#FFF; font-size:10px; letter-spacing:1px;">
-                                            SISTEMA DE CHAMADOS | GRCE
+                                            SISTEMA DE CHAMADOS | HELPDESK
                                         </td>
                                     </tr>
                                 </table>

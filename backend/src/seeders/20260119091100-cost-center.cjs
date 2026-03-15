@@ -5,19 +5,19 @@ module.exports = {
     await queryInterface.bulkInsert("cost_center", [
       {
         id: 1,
-        name: "ABCP - Certificadora de Produtos",
+        name: "Matriz",
       },
       {
         id: 2,
-        name: "YES - Serviços em Certificação Ltda",
+        name: "Filial SP",
       },
       {
         id: 3,
-        name: "GRCE - Gestão de Negocios Recursos Humanos Tecnologicos e Comercial LTDA",
+        name: "Filial RJ",
       },
       {
         id: 4,
-        name: "NTD - Núcleo de Tecnologia e Desenvolvimento",
+        name: "Filial MG",
       },
     ]);
   },

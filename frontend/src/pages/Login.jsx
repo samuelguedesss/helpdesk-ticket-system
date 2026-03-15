@@ -3,7 +3,7 @@ import { Box, Button, TextField, Typography, Link, InputAdornment, IconButton, P
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import imgLoginn from "../assets/Rectangle140.png";
-import imgLogoGrc from "../assets/logoGrc.png";
+import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { useNavigate } from "react-router-dom";
 import apiBackend from '../services/apiBackend';
 import AppAlert from "../components/AppAlert";
@@ -93,15 +93,20 @@ export default function Login() {
                     }}
                 >
 
-                    {/* LOGO FIXADO NO TOPO */}
+                    {/* LOGO */}
                     <Box
                         sx={{
                             position: "absolute",
-                            top: "35px",
-                            left: "40px",
+                            top: "25px",
+                            left: "30px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            opacity: 0.7,
                         }}
                     >
-                        <img src={imgLogoGrc} width={120} alt="Logo" style={{ opacity: 0.6 }} />
+                        <SupportAgentIcon sx={{ fontSize: 32, color: "#2F3A32" }} />
+                        <Typography fontWeight={700} fontSize={16} color="#2F3A32">HelpDesk</Typography>
                     </Box>
 
                     <Typography variant="h5" fontWeight={700} mb={1}>

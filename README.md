@@ -553,6 +553,132 @@ VITE_API_URL=http://localhost:8080
 
 ---
 
+## Aprovacao Financeira
+
+Determinadas subcategorias de chamados possuem uma flag que exige **aprovacao do setor financeiro** antes que um tecnico possa assumir e tratar o chamado. Isso garante que solicitacoes com impacto financeiro (compras, contratacoes, licencas, etc.) passem por uma validacao previa.
+
+### Como Funciona
+
+1. O administrador cadastra uma subcategoria com a flag `requires_financial_approval = true`
+2. Quando um usuario abre um chamado nessa subcategoria, o campo `financial_approval_status` e automaticamente definido como **"pending"**
+3. O chamado aparece na **Fila de Aprovacao** visivel apenas para usuarios do departamento financeiro
+4. O setor financeiro pode **aprovar** ou **rejeitar** o chamado:
+
+```
+Chamado criado (subcategoria com aprovacao financeira)
+         │
+         ▼
+  Status: financial_approval_status = "pending"
+  Chamado aparece na Fila de Aprovacao
+         │
+    ┌────┴────┐
+    ▼         ▼
+APROVADO   REJEITADO
+    │         │
+    ▼         ▼
+Tecnico    Chamado fechado
+pode       automaticamente
+assumir    com motivo da
+o chamado  rejeicao
+```
+
+### Regras
+
+| Situacao | Comportamento |
+|---|---|
+| Chamado **pendente** de aprovacao | Tecnico **nao pode assumir** — botao bloqueado |
+| Chamado **aprovado** | Tecnico pode assumir e tratar normalmente |
+| Chamado **rejeitado** | Chamado e **fechado automaticamente** com o motivo da rejeicao |
+| Chamado rejeitado e **reaberto** | Status volta para **"pending"** e requer nova aprovacao |
+
+### Quem Aprova
+
+Apenas usuarios vinculados ao **departamento financeiro** (departamento ID 7) tem acesso a fila de aprovacao e podem aprovar ou rejeitar chamados. Essa verificacao e feita tanto no frontend (componente `FinancialOnly`) quanto no backend (validacao do departamento do usuario).
+
+---
+
+## Sistema de Chat por Chamado
+
+Cada chamado possui um **chat integrado** que permite a comunicacao direta entre o solicitante e o tecnico responsavel. O chat foi implementado sem WebSocket, utilizando **HTTP Polling** a cada 4 segundos.
+
+### Como Funciona
+
+```
+Solicitante abre o chamado
+         │
+         ▼
+Tecnico assume o chamado
+         │
+         ▼
+Chat fica disponivel para ambos
+         │
+    ┌────┴────┐
+    ▼         ▼
+Solicitante  Tecnico
+envia msg    envia msg
+    │         │
+    ▼         ▼
+Notificacao gerada
+para o outro usuario
+```
+
+### Endpoints do Chat
+
+| Metodo | Endpoint | Descricao |
+|---|---|---|
+| `POST` | `/api/messages-called/:id_called` | Enviar mensagem no chat do chamado |
+| `GET` | `/api/messages-called/:id_called` | Carregar todas as mensagens |
+| `GET` | `/api/messages-called/:id_called/poll?lastId=N` | Polling — buscar apenas mensagens novas |
+
+### Polling em Tempo Real
+
+O frontend utiliza **polling HTTP** com intervalo de 4 segundos para simular tempo real:
+
+```
+1. Componente monta → GET /messages-called/:id (carrega todas)
+         │
+         ▼
+2. Armazena o ID da ultima mensagem (lastIdRef)
+         │
+         ▼
+3. A cada 4s → GET /messages-called/:id/poll?lastId=N
+         │
+         ▼
+4. Novas mensagens? → Adiciona ao estado local
+         │
+         ▼
+5. Auto-scroll para o final da conversa
+```
+
+### Permissoes do Chat
+
+| Acao | Quem pode |
+|---|---|
+| Enviar mensagem | Apenas o **solicitante** do chamado ou o **tecnico responsavel** |
+| Visualizar mensagens | Apenas o **solicitante** ou o **tecnico responsavel** |
+| Chat bloqueado | Chamados com status **Finalizado** nao permitem novas mensagens |
+
+### Interface do Chat
+
+- Mensagens do usuario logado aparecem **a direita** (bolha azul)
+- Mensagens do outro participante aparecem **a esquerda** (bolha branca)
+- Cada mensagem exibe: avatar, nome do usuario, texto e horario
+- Suporte a **Enter** para enviar e **Shift+Enter** para quebra de linha
+- Estado vazio: "Nenhuma mensagem ainda. Inicie a conversa!"
+
+### Estrutura da Tabela `messages_called`
+
+| Campo | Tipo | Descricao |
+|---|---|---|
+| `id` | INTEGER | Chave primaria auto-incremento |
+| `id_called` | INTEGER | FK para o chamado |
+| `id_user` | INTEGER | FK para o usuario que enviou |
+| `message` | TEXT | Conteudo da mensagem |
+| `internal` | BOOLEAN | Flag para notas internas (preparado para uso futuro) |
+| `shipping_date` | DATE | Data/hora do envio |
+
+---
+
 ## Melhorias Futuras
 
 - [ ] **Testes automatizados** - Implementar testes unitarios e de integracao com Jest e React Testing Library
